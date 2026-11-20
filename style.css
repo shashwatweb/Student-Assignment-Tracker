@@ -439,3 +439,232 @@ body {
     text-decoration: line-through;
     opacity: 0.6;
 }
+.profile-pic {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #eee7ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.profile-icon {
+    font-size: 25px;
+}
+
+.profile-container {
+    position: relative;
+}
+
+.profile-pic {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #eee7ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+}
+
+.profile-icon {
+    font-size: 25px;
+}
+
+.profile-menu {
+    display: none;
+    position: absolute;
+    top: 52px;
+    right: 0;
+    width: 140px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    padding: 8px;
+    z-index: 1000;
+}
+
+.profile-menu.show {
+    display: block;
+}
+
+.profile-menu button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    background: white;
+    text-align: left;
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+.profile-menu button:hover {
+    background: #eee7ff;
+}
+.theme-sidebar-btn {
+    width: 100%;
+    border: none;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.theme-sidebar-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+body.dark-mode .theme-sidebar-btn {
+    color: white;
+}
+
+/* ===== COMPLETE DARK THEME ===== */
+
+body.dark-mode {
+    background-color: #12121c !important;
+    color: #f1f1f1 !important;
+}
+
+/* Main dashboard */
+body.dark-mode .main-content {
+    background-color: #12121c !important;
+    color: #f1f1f1 !important;
+}
+
+/* Sidebar */
+body.dark-mode .sidebar {
+    background-color: #1b1b2b !important;
+    color: white !important;
+}
+
+/* Header and cards */
+body.dark-mode .topbar,
+body.dark-mode .stat-card,
+body.dark-mode .assignments,
+body.dark-mode .calendar,
+body.dark-mode .progress-section,
+body.dark-mode .assignment-card {
+    background-color: #252538 !important;
+    color: #f1f1f1 !important;
+    border-color: #393950 !important;
+}
+
+/* All dashboard text */
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode h3,
+body.dark-mode p,
+body.dark-mode span,
+body.dark-mode small,
+body.dark-mode label {
+    color: #f1f1f1;
+}
+
+/* Search and form inputs */
+body.dark-mode input,
+body.dark-mode textarea,
+body.dark-mode select {
+    background-color: #303047 !important;
+    color: white !important;
+    border-color: #484860 !important;
+}
+
+/* Calendar */
+body.dark-mode .calendar-day {
+    color: white !important;
+}
+
+body.dark-mode .calendar-day:hover {
+    background-color: #48405f !important;
+}
+
+/* Profile dropdown */
+body.dark-mode .profile-menu {
+    background-color: #252538 !important;
+}
+
+body.dark-mode .profile-menu button {
+    background-color: #252538 !important;
+    color: white !important;
+}
+
+/* Sidebar navigation */
+body.dark-mode .nav-link {
+    color: #eeeeff !important;
+}
+
+/* Buttons */
+body.dark-mode button {
+    color: white;
+}
+
+/* ===== DARK MODE TEXT FIX ===== */
+
+/* Main text */
+body.dark-mode {
+    color: #f1f1f1 !important;
+}
+
+/* Headings and paragraphs */
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode h3,
+body.dark-mode h4,
+body.dark-mode p,
+body.dark-mode small,
+body.dark-mode label {
+    color: #f1f1f1 !important;
+}
+
+/* Assignment information */
+body.dark-mode .assignment-card h3,
+body.dark-mode .assignment-card p,
+body.dark-mode .assignment-card small {
+    color: #ffffff !important;
+}
+
+/* Statistics */
+body.dark-mode .stat-card h2,
+body.dark-mode .stat-card h3,
+body.dark-mode .stat-card p,
+body.dark-mode .stat-card span {
+    color: #ffffff !important;
+}
+
+/* Welcome section */
+body.dark-mode .welcome-section h1,
+body.dark-mode .welcome-section p {
+    color: #ffffff !important;
+}
+
+/* Calendar text */
+body.dark-mode .calendar h2,
+body.dark-mode .calendar-day {
+    color: #ffffff !important;
+}
+
+/* Sidebar */
+body.dark-mode .sidebar h2,
+body.dark-mode .sidebar p,
+body.dark-mode .nav-link {
+    color: #ffffff !important;
+}
+
+/* Search placeholder */
+body.dark-mode input::placeholder {
+    color: #c5c5d5 !important;
+}
+
+/* Buttons */
+body.dark-mode button {
+    color: #ffffff;
+}
+
+/* Completed assignment */
+body.dark-mode .completed h3 {
+    color: #bcbccc !important;
+}

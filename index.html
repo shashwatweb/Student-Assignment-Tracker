@@ -33,9 +33,10 @@
             </nav>
 
             <div class="sidebar-bottom">
-                <a href="#">☀️ Light / Dark</a>
-                <a href="#">ⓘ About</a>
-                <a href="#">↪ Logout</a>
+               <button id="themeToggle" class="nav-link theme-sidebar-btn">
+    <span id="themeIcon">🌙</span>
+    <span id="themeText">Dark Mode</span>
+</button>
             </div>
 
         </aside>
@@ -52,17 +53,24 @@
                     placeholder="Search assignments..."
                 >
 
-                <div class="profile">
-                    🔔
-                    <span>SS</span>
-                </div>
+<div class="profile-container">
+    <button class="profile-pic" id="profileBtn" aria-label="Open profile menu">
+        <span class="profile-icon">👤</span>
+    </button>
+
+    <div class="profile-menu" id="profileMenu">
+        <button id="aboutBtn">About</button>
+        <button id="logoutBtn">Logout</button>
+    </div>
+</div>
+
 
             </header>
 
             <!-- Welcome Section -->
             <section class="welcome">
 
-                <h1>Good Afternoon! 👋</h1>
+                <h1 id="greeting">Good Afternoon!</h1>
 
                 <p>
                     Here's your academic progress at a glance.

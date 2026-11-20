@@ -226,3 +226,104 @@ assignmentList.addEventListener("click", function(event) {
         updateDashboard();
     }
 });
+
+function updateGreeting() {
+    const hour = new Date().getHours();
+    const greeting = document.getElementById("greeting");
+
+    if (!greeting) return;
+
+    if (hour >= 5 && hour < 12) {
+        greeting.textContent = "Good Morning!";
+    } 
+    else if (hour >= 12 && hour < 17) {
+        greeting.textContent = "Good Afternoon!";
+    } 
+    else if (hour >= 17 && hour < 21) {
+        greeting.textContent = "Good Evening!";
+    } 
+    else {
+        greeting.textContent = "Good Night!";
+    }
+}
+
+updateGreeting();
+
+const profileBtn = document.getElementById("profileBtn");
+const profileMenu = document.getElementById("profileMenu");
+const aboutBtn = document.getElementById("aboutBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+
+// Open and close profile menu
+profileBtn.addEventListener("click", function(event) {
+    event.stopPropagation();
+    profileMenu.classList.toggle("show");
+});
+
+// Close menu when clicking outside
+document.addEventListener("click", function(event) {
+    if (!event.target.closest(".profile-container")) {
+        profileMenu.classList.remove("show");
+    }
+});
+
+// About section
+aboutBtn.addEventListener("click", function() {
+    profileMenu.classList.remove("show");
+
+    alert(
+        "Student Assignment Deadline Tracker\n\n" +
+        "A dashboard to manage assignments, track deadlines, " +
+        "and monitor academic progress."
+    );
+});
+
+// Logout section
+logoutBtn.addEventListener("click", function() {
+    profileMenu.classList.remove("show");
+
+    alert("You have been logged out.");
+});
+
+/* ===== SIDEBAR THEME SWITCHER ===== */
+
+const themeToggle = document.getElementById("themeToggle");
+const themeIcon = document.getElementById("themeIcon");
+const themeText = document.getElementById("themeText");
+
+// Apply saved theme
+let currentTheme = localStorage.getItem("dashboardTheme") || "light";
+
+function applyTheme(theme) {
+    currentTheme = theme;
+
+    if (theme === "dark") {
+        document.body.classList.add("dark-mode");
+    } else {
+        document.body.classList.remove("dark-mode");
+    }
+
+    if (themeIcon) {
+        themeIcon.textContent = theme === "dark" ? "☀️" : "🌙";
+    }
+
+    if (themeText) {
+        themeText.textContent = theme === "dark" ? "Light Mode" : "Dark Mode";
+    }
+
+    localStorage.setItem("dashboardTheme", theme);
+}
+
+// Load saved theme
+applyTheme(currentTheme);
+
+// Toggle theme
+if (themeToggle) {
+    themeToggle.addEventListener("click", function(event) {
+        event.preventDefault();
+
+        const newTheme = currentTheme === "dark" ? "light" : "dark";
+
+        applyTheme(newTheme);
+    });
+}
