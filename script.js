@@ -101,6 +101,11 @@ addAssignmentBtn.addEventListener("click", function() {
             <p>${escapeHTML(subject.trim())}</p>
             <small>Due: ${escapeHTML(date)}</small>
         </div>
+        <div class="assignment-actions">
+        <button class="complete-btn">Mark Complete</button>
+        <button class="edit-btn">Edit</button>
+        <button class="delete-btn">Delete</button>
+    </div>
         <button class="complete-btn">Mark Complete</button>
     `;
 
@@ -177,3 +182,47 @@ nextMonth.addEventListener("click", function() {
 // Start dashboard
 updateDashboard();
 renderCalendar();
+
+assignmentList.addEventListener("click", function(event) {
+
+    const card = event.target.closest(".assignment-card");
+    if (!card) return;
+
+    // Delete assignment
+    if (event.target.classList.contains("delete-btn")) {
+        const confirmDelete = confirm("Delete this assignment?");
+
+        if (confirmDelete) {
+            card.remove();
+            updateDashboard();
+        }
+    }
+
+    // Edit assignment
+    if (event.target.classList.contains("edit-btn")) {
+        const heading = card.querySelector("h3");
+        const subjectText = card.querySelector("p");
+
+        const newTitle = prompt("Edit assignment name:", heading.textContent);
+        if (newTitle === null || !newTitle.trim()) return;
+
+        const newSubject = prompt("Edit subject:", subjectText.textContent);
+        if (newSubject === null || !newSubject.trim()) return;
+
+        const newDate = prompt(
+            "Edit due date (YYYY-MM-DD):",
+            card.dataset.date
+        );
+
+        if (newDate === null || !/^\d{4}-\d{2}-\d{2}$/.test(newDate)) {
+            alert("Enter a valid date in YYYY-MM-DD format.");
+            return;
+        }
+
+        heading.textContent = newTitle.trim();
+        subjectText.textContent = newSubject.trim();
+        card.dataset.date = newDate;
+
+        updateDashboard();
+    }
+});
