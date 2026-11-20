@@ -1,0 +1,209 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Student Assignment Tracker</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Main Dashboard -->
+    <div class="dashboard">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+
+            <div class="logo">
+                <h1>🎓</h1>
+                <h2>Student<br>Assignment<br>Tracker</h2>
+            </div>
+
+            <nav>
+                <a href="#" class="active">🏠 Dashboard</a>
+                <a href="#">📋 Assignments</a>
+                <a href="#">📅 Calendar</a>
+                <a href="#">✅ Completed Tasks</a>
+            </nav>
+
+            <div class="sidebar-bottom">
+                <a href="#">☀️ Light / Dark</a>
+                <a href="#">ⓘ About</a>
+                <a href="#">↪ Logout</a>
+            </div>
+
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+
+            <!-- Top Navigation -->
+            <header class="topbar">
+
+                <input
+                    type="search"
+                    id="searchInput"
+                    placeholder="Search assignments..."
+                >
+
+                <div class="profile">
+                    🔔
+                    <span>SS</span>
+                </div>
+
+            </header>
+
+            <!-- Welcome Section -->
+            <section class="welcome">
+
+                <h1>Good Afternoon! 👋</h1>
+
+                <p>
+                    Here's your academic progress at a glance.
+                </p>
+
+            </section>
+
+            <!-- Statistics Cards -->
+            <section class="stats">
+
+                <div class="stat-card purple">
+                    <h2>📚</h2>
+                    <h1 id="totalCount">12</h1>
+                    <p>Total Assignments</p>
+                </div>
+
+                <div class="stat-card blue">
+                    <h2>🕒</h2>
+                    <h1 id="pendingCount">5</h1>
+                    <p>Pending</p>
+                </div>
+
+                <div class="stat-card green">
+                    <h2>✅</h2>
+                    <h1 id="completedCount">7</h1>
+                    <p>Completed</p>
+                </div>
+
+                <div class="stat-card pink">
+                    <h2>⚠️</h2>
+                    <h1 id="dueCount">2</h1>
+                    <p>Due Soon</p>
+                </div>
+
+            </section>
+
+            <!-- Dashboard Content -->
+            <section class="dashboard-content">
+
+                <!-- Upcoming Assignments -->
+                <div class="assignments">
+
+                    <div class="section-heading">
+                        <h2>📅 Upcoming Assignments</h2>
+                        <a href="#">View All →</a>
+                    </div>
+
+                    <div id="assignmentList">
+
+                        <div class="assignment-card">
+                            <div>
+                                <h3>Mathematics Assignment</h3>
+                                <p>Due: 22 November, 2026</p>
+                            </div>
+                            <span class="priority high">
+                                High Priority
+                            </span>
+                        </div>
+
+                        <div class="assignment-card">
+                            <div>
+                                <h3>Physics Lab Report</h3>
+                                <p>Due: 25 November, 2026</p>
+                            </div>
+                            <span class="priority medium">
+                                Medium
+                            </span>
+                        </div>
+
+                        <div class="assignment-card">
+                            <div>
+                                <h3>Web Development Project</h3>
+                                <p>Due: 28 November, 2026</p>
+                            </div>
+                            <span class="priority low">
+                                In Progress
+                            </span>
+                        </div>
+
+                    </div>
+
+                    <button id="addAssignmentBtn">
+                        + Add New Assignment
+                    </button>
+
+                </div>
+
+                <!-- Calendar -->
+                <div class="calendar">
+
+                    <h2>📅 Calendar</h2>
+
+                    <div class="calendar-header">
+                        <button id="prevMonth">❮</button>
+
+                        <h3 id="monthLabel">
+                            November 2026
+                        </h3>
+
+                        <button id="nextMonth">❯</button>
+                    </div>
+
+                    <div class="calendar-grid" id="calendarGrid">
+                        <!-- Calendar generated by JavaScript -->
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- Progress Section -->
+            <section class="progress-section">
+
+                <div class="motivation">
+                    <h2>🎓 Stay on Track!</h2>
+
+                    <p>
+                        You've got this. Keep managing your
+                        assignments! 💜
+                    </p>
+                </div>
+
+                <div class="progress-card">
+
+                    <h3>Your Progress</h3>
+
+                    <div class="progress-bar">
+                        <div id="progressFill"></div>
+                    </div>
+
+                    <p id="progressPercent">58%</p>
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+</html>

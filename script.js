@@ -1,0 +1,179 @@
+
+// Get HTML elements
+const assignmentList = document.getElementById("assignmentList");
+const searchInput = document.getElementById("searchInput");
+const addAssignmentBtn = document.getElementById("addAssignmentBtn");
+
+const totalCount = document.getElementById("totalCount");
+const pendingCount = document.getElementById("pendingCount");
+const completedCount = document.getElementById("completedCount");
+const dueCount = document.getElementById("dueCount");
+
+const progressFill = document.getElementById("progressFill");
+const progressPercent = document.getElementById("progressPercent");
+
+// Update dashboard statistics
+function updateDashboard() {
+    const cards = [...assignmentList.querySelectorAll(".assignment-card")];
+
+    const total = cards.length;
+    const completed = cards.filter(card =>
+        card.classList.contains("completed")
+    ).length;
+    const pending = total - completed;
+
+    totalCount.textContent = total;
+    pendingCount.textContent = pending;
+    completedCount.textContent = completed;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const dueSoon = cards.filter(card => {
+        const dateText = card.dataset.date;
+        if (!dateText || card.classList.contains("completed")) return false;
+
+        const dueDate = new Date(dateText + "T00:00:00");
+        const daysLeft = Math.ceil((dueDate - today) / 86400000);
+
+        return daysLeft >= 0 && daysLeft <= 3;
+    }).length;
+
+    dueCount.textContent = dueSoon;
+
+    const percentage = total === 0
+        ? 0
+        : Math.round((completed / total) * 100);
+
+    progressFill.style.width = percentage + "%";
+    progressPercent.textContent = percentage + "%";
+}
+
+// Mark an assignment as completed
+assignmentList.addEventListener("click", function(event) {
+    const button = event.target.closest(".complete-btn");
+
+    if (button) {
+        const card = button.closest(".assignment-card");
+        if (!card) return;
+
+        card.classList.toggle("completed");
+
+        button.textContent = card.classList.contains("completed")
+            ? "Completed"
+            : "Mark Complete";
+
+        updateDashboard();
+    }
+});
+
+// Search assignments
+searchInput.addEventListener("input", function() {
+    const searchText = searchInput.value.toLowerCase();
+
+    document.querySelectorAll(".assignment-card").forEach(card => {
+        const matches = card.textContent.toLowerCase().includes(searchText);
+        card.style.display = matches ? "" : "none";
+    });
+});
+
+// Add a new assignment
+addAssignmentBtn.addEventListener("click", function() {
+    const title = prompt("Enter assignment name:");
+    if (!title || !title.trim()) return;
+
+    const subject = prompt("Enter subject:");
+    if (!subject || !subject.trim()) return;
+
+    const date = prompt("Enter due date (YYYY-MM-DD):");
+    if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+        alert("Please enter the date in YYYY-MM-DD format.");
+        return;
+    }
+
+    const card = document.createElement("div");
+    card.className = "assignment-card";
+    card.dataset.date = date;
+
+    card.innerHTML = `
+        <div>
+            <h3>${escapeHTML(title.trim())}</h3>
+            <p>${escapeHTML(subject.trim())}</p>
+            <small>Due: ${escapeHTML(date)}</small>
+        </div>
+        <button class="complete-btn">Mark Complete</button>
+    `;
+
+    assignmentList.appendChild(card);
+    updateDashboard();
+});
+
+// Safely display user-entered text
+function escapeHTML(value) {
+    return value.replace(/[&<>"']/g, character => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+    })[character]);
+}
+
+// Calendar
+const calendarGrid = document.getElementById("calendarGrid");
+const monthLabel = document.getElementById("monthLabel");
+const prevMonth = document.getElementById("prevMonth");
+const nextMonth = document.getElementById("nextMonth");
+
+let calendarDate = new Date();
+
+function renderCalendar() {
+    if (!calendarGrid || !monthLabel) return;
+
+    const year = calendarDate.getFullYear();
+    const month = calendarDate.getMonth();
+
+    monthLabel.textContent = calendarDate.toLocaleDateString("en-US", {
+        month: "long",
+        year: "numeric"
+    });
+
+    calendarGrid.innerHTML = "";
+
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    for (let i = 0; i < firstDay; i++) {
+        const blank = document.createElement("div");
+        calendarGrid.appendChild(blank);
+    }
+
+    for (let day = 1; day <= daysInMonth; day++) {
+        const dayElement = document.createElement("div");
+        dayElement.className = "calendar-day";
+        dayElement.textContent = day;
+
+        const isToday =
+            day === new Date().getDate() &&
+            month === new Date().getMonth() &&
+            year === new Date().getFullYear();
+
+        if (isToday) dayElement.classList.add("today");
+
+        calendarGrid.appendChild(dayElement);
+    }
+}
+
+prevMonth.addEventListener("click", function() {
+    calendarDate.setMonth(calendarDate.getMonth() - 1);
+    renderCalendar();
+});
+
+nextMonth.addEventListener("click", function() {
+    calendarDate.setMonth(calendarDate.getMonth() + 1);
+    renderCalendar();
+});
+
+// Start dashboard
+updateDashboard();
+renderCalendar();
