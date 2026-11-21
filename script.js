@@ -1,342 +1,132 @@
+const $ = s => document.querySelector(s);
+const STATUS = ["Pending", "In Progress", "Completed"];
+const esc = s => s.replace(/[&<>"']/g, c => "&#" + c.charCodeAt(0) + ";");
+const fmt = d => new Date(d + "T00:00").toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" });
+const today = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD
 
-// Get HTML elements
-const assignmentList = document.getElementById("assignmentList");
-const searchInput = document.getElementById("searchInput");
-const addAssignmentBtn = document.getElementById("addAssignmentBtn");
+let items = JSON.parse(localStorage.getItem("tasks") || "null") || [
+  { id: 1, title: "Calculus Homework 5", subject: "Calculus", date: "2026-11-25", status: "Pending" },
+  { id: 2, title: "Physics Lab Report", subject: "Physics", date: "2026-11-28", status: "In Progress" },
+  { id: 3, title: "Web Dev Project Draft", subject: "Web Development", date: "2026-12-01", status: "Pending" },
+  { id: 4, title: "Digital Design Quiz", subject: "Digital Design", date: "2026-12-03", status: "Completed" },
+  { id: 5, title: "AI Ethics Essay", subject: "AI & ML", date: "2026-12-05", status: "Completed" }
+];
+let view = "dashboard";
+let cal = new Date(); cal.setDate(1);
 
-const totalCount = document.getElementById("totalCount");
-const pendingCount = document.getElementById("pendingCount");
-const completedCount = document.getElementById("completedCount");
-const dueCount = document.getElementById("dueCount");
+const save = () => localStorage.setItem("tasks", JSON.stringify(items));
 
-const progressFill = document.getElementById("progressFill");
-const progressPercent = document.getElementById("progressPercent");
+function render() {
+  const done = items.filter(i => i.status === "Completed").length;
+  const pct = items.length ? Math.round(done / items.length * 100) : 0;
+  $("#total").textContent = items.length;
+  $("#pending").textContent = items.length - done;
+  $("#completed").textContent = done;
+  $("#ring").style.setProperty("--p", pct);
+  $("#ring").textContent = pct + "%";
+  $("#bar").style.width = pct + "%";
+  $("#ofText").textContent = `${done} of ${items.length}`;
 
-// Update dashboard statistics
-function updateDashboard() {
-    const cards = [...assignmentList.querySelectorAll(".assignment-card")];
+  // Subject filter (rebuilt from data)
+  const subs = [...new Set(items.map(i => i.subject))];
+  let sub = subs.includes($("#subject").value) ? $("#subject").value : "";
+  $("#subject").innerHTML = '<option value="">All Subjects</option>' +
+    subs.map(s => `<option ${s === sub ? "selected" : ""}>${esc(s)}</option>`).join("");
 
-    const total = cards.length;
-    const completed = cards.filter(card =>
-        card.classList.contains("completed")
-    ).length;
-    const pending = total - completed;
+  // Assignment list
+  const q = $("#search").value.toLowerCase(), st = $("#status").value;
+  const rows = items
+    .filter(i => (view === "completed" ? i.status === "Completed" : !st || i.status === st)
+      && (!sub || i.subject === sub)
+      && (i.title + i.subject).toLowerCase().includes(q))
+    .sort((a, b) => $("#sort").value === "title" ? a.title.localeCompare(b.title) : a.date.localeCompare(b.date));
 
-    totalCount.textContent = total;
-    pendingCount.textContent = pending;
-    completedCount.textContent = completed;
+  $("#list").innerHTML = rows.map(i => `
+    <div class="row">
+      <span class="ico">📘</span>
+      <div><b>${esc(i.title)}</b><small>${esc(i.subject)}</small></div>
+      <span>📅 ${fmt(i.date)}</span>
+      <button class="pill ${i.status.replace(" ", "")}" data-act="status" data-id="${i.id}" title="Click to change status">${i.status}</button>
+      <span class="acts">
+        <button data-act="edit" data-id="${i.id}" title="Edit">✏️</button>
+        <button data-act="del" data-id="${i.id}" title="Delete">🗑️</button>
+      </span>
+    </div>`).join("") || '<p class="empty">No assignments found. Click "+ Add Assignment" to create one.</p>';
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+  // Upcoming deadlines
+  $("#upcoming").innerHTML = items.filter(i => i.status !== "Completed")
+    .sort((a, b) => a.date.localeCompare(b.date)).slice(0, 3)
+    .map(i => `<div class="up"><b>${new Date(i.date + "T00:00").toLocaleDateString("en-US", { month: "short" })}<br>${i.date.slice(8)}</b>
+      <div>${esc(i.title)}<small>(${esc(i.subject)})</small></div></div>`).join("")
+    || '<p class="empty">Nothing due. 🎉</p>';
 
-    const dueSoon = cards.filter(card => {
-        const dateText = card.dataset.date;
-        if (!dateText || card.classList.contains("completed")) return false;
-
-        const dueDate = new Date(dateText + "T00:00:00");
-        const daysLeft = Math.ceil((dueDate - today) / 86400000);
-
-        return daysLeft >= 0 && daysLeft <= 3;
-    }).length;
-
-    dueCount.textContent = dueSoon;
-
-    const percentage = total === 0
-        ? 0
-        : Math.round((completed / total) * 100);
-
-    progressFill.style.width = percentage + "%";
-    progressPercent.textContent = percentage + "%";
+  // Calendar
+  const y = cal.getFullYear(), m = cal.getMonth();
+  $("#month").textContent = cal.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+  let h = [..."SMTWTFS"].map(d => `<b>${d}</b>`).join("") + "<i></i>".repeat(cal.getDay());
+  for (let d = 1; d <= new Date(y, m + 1, 0).getDate(); d++) {
+    const iso = `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+    const due = items.filter(i => i.date === iso);
+    h += `<div class="day ${iso === today ? "today" : ""} ${due.length ? "due" : ""}">${d}${due.map(i => `<small>${esc(i.title)}</small>`).join("")}</div>`;
+  }
+  $("#days").innerHTML = h;
 }
 
-// Mark an assignment as completed
-assignmentList.addEventListener("click", function(event) {
-    const button = event.target.closest(".complete-btn");
+// Switch between Dashboard / Assignments / Calendar / Completed
+function setView(v) {
+  view = v;
+  document.body.dataset.view = v;
+  document.querySelectorAll("nav button").forEach(b => b.classList.toggle("active", b.dataset.view === v));
+  $("#listTitle").textContent = v === "completed" ? "✅ Completed Tasks" : "📋 My Assignments";
+  render();
+}
 
-    if (button) {
-        const card = button.closest(".assignment-card");
-        if (!card) return;
+// Add / edit (same prompts for both)
+function ask(t = {}) {
+  const title = prompt("Assignment name:", t.title || "");
+  if (!title || !title.trim()) return;
+  const subject = prompt("Subject:", t.subject || "");
+  if (!subject || !subject.trim()) return;
+  const date = prompt("Due date (YYYY-MM-DD):", t.date || "");
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date || "")) return alert("Please use the YYYY-MM-DD format.");
+  Object.assign(t, { title: title.trim(), subject: subject.trim(), date });
+  if (!t.id) { t.id = Date.now(); t.status = "Pending"; items.push(t); }
+  save(); render();
+}
 
-        card.classList.toggle("completed");
+// Theme
+function setTheme(dark) {
+  document.body.classList.toggle("dark", dark);
+  $("#theme").textContent = dark ? "☀️ Light Mode" : "🌙 Dark Mode";
+  localStorage.setItem("dark", dark ? "1" : "");
+}
 
-        button.textContent = card.classList.contains("completed")
-            ? "Completed"
-            : "Mark Complete";
-
-        updateDashboard();
-    }
+// Events
+document.addEventListener("click", e => {
+  const v = e.target.closest("[data-view]");
+  if (v) setView(v.dataset.view);
 });
-
-// Search assignments
-searchInput.addEventListener("input", function() {
-    const searchText = searchInput.value.toLowerCase();
-
-    document.querySelectorAll(".assignment-card").forEach(card => {
-        const matches = card.textContent.toLowerCase().includes(searchText);
-        card.style.display = matches ? "" : "none";
-    });
+$("#list").addEventListener("click", e => {
+  const b = e.target.closest("button");
+  if (!b) return;
+  const t = items.find(i => i.id == b.dataset.id);
+  if (b.dataset.act === "status") t.status = STATUS[(STATUS.indexOf(t.status) + 1) % 3];
+  if (b.dataset.act === "edit") return ask(t);
+  if (b.dataset.act === "del") {
+    if (!confirm("Delete this assignment?")) return;
+    items = items.filter(i => i !== t);
+  }
+  save(); render();
 });
+document.querySelectorAll("#search, select").forEach(el => el.addEventListener("input", render));
+$("#add").onclick = () => ask();
+$("#prev").onclick = () => { cal.setMonth(cal.getMonth() - 1); render(); };
+$("#next").onclick = () => { cal.setMonth(cal.getMonth() + 1); render(); };
+$("#theme").onclick = () => setTheme(!document.body.classList.contains("dark"));
+$("#profile").onclick = () => $("#about").showModal();
 
-// Add a new assignment
-addAssignmentBtn.addEventListener("click", function() {
-    const title = prompt("Enter assignment name:");
-    if (!title || !title.trim()) return;
-
-    const subject = prompt("Enter subject:");
-    if (!subject || !subject.trim()) return;
-
-    const date = prompt("Enter due date (YYYY-MM-DD):");
-    if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
-        alert("Please enter the date in YYYY-MM-DD format.");
-        return;
-    }
-
-    const card = document.createElement("div");
-    card.className = "assignment-card";
-    card.dataset.date = date;
-
-    card.innerHTML = `
-        <div>
-            <h3>${escapeHTML(title.trim())}</h3>
-            <p>${escapeHTML(subject.trim())}</p>
-            <small>Due: ${escapeHTML(date)}</small>
-        </div>
-        <div class="assignment-actions">
-        <button class="complete-btn">Mark Complete</button>
-        <button class="edit-btn">Edit</button>
-        <button class="delete-btn">Delete</button>
-    </div>
-        <button class="complete-btn">Mark Complete</button>
-    `;
-
-    assignmentList.appendChild(card);
-    updateDashboard();
-});
-
-// Safely display user-entered text
-function escapeHTML(value) {
-    return value.replace(/[&<>"']/g, character => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#039;"
-    })[character]);
-}
-
-// Calendar
-const calendarGrid = document.getElementById("calendarGrid");
-const monthLabel = document.getElementById("monthLabel");
-const prevMonth = document.getElementById("prevMonth");
-const nextMonth = document.getElementById("nextMonth");
-
-let calendarDate = new Date();
-
-function renderCalendar() {
-    if (!calendarGrid || !monthLabel) return;
-
-    const year = calendarDate.getFullYear();
-    const month = calendarDate.getMonth();
-
-    monthLabel.textContent = calendarDate.toLocaleDateString("en-US", {
-        month: "long",
-        year: "numeric"
-    });
-
-    calendarGrid.innerHTML = "";
-
-    const firstDay = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-    for (let i = 0; i < firstDay; i++) {
-        const blank = document.createElement("div");
-        calendarGrid.appendChild(blank);
-    }
-
-    for (let day = 1; day <= daysInMonth; day++) {
-        const dayElement = document.createElement("div");
-        dayElement.className = "calendar-day";
-        dayElement.textContent = day;
-
-        const isToday =
-            day === new Date().getDate() &&
-            month === new Date().getMonth() &&
-            year === new Date().getFullYear();
-
-        if (isToday) dayElement.classList.add("today");
-
-        calendarGrid.appendChild(dayElement);
-    }
-}
-
-prevMonth.addEventListener("click", function() {
-    calendarDate.setMonth(calendarDate.getMonth() - 1);
-    renderCalendar();
-});
-
-nextMonth.addEventListener("click", function() {
-    calendarDate.setMonth(calendarDate.getMonth() + 1);
-    renderCalendar();
-});
-
-// Start dashboard
-updateDashboard();
-renderCalendar();
-
-assignmentList.addEventListener("click", function(event) {
-
-    const card = event.target.closest(".assignment-card");
-    if (!card) return;
-
-    // Delete assignment
-    if (event.target.classList.contains("delete-btn")) {
-        const confirmDelete = confirm("Delete this assignment?");
-
-        if (confirmDelete) {
-            card.remove();
-            updateDashboard();
-        }
-    }
-
-    // Edit assignment
-    if (event.target.classList.contains("edit-btn")) {
-        const heading = card.querySelector("h3");
-        const subjectText = card.querySelector("p");
-
-        const newTitle = prompt("Edit assignment name:", heading.textContent);
-        if (newTitle === null || !newTitle.trim()) return;
-
-        const newSubject = prompt("Edit subject:", subjectText.textContent);
-        if (newSubject === null || !newSubject.trim()) return;
-
-        const newDate = prompt(
-            "Edit due date (YYYY-MM-DD):",
-            card.dataset.date
-        );
-
-        if (newDate === null || !/^\d{4}-\d{2}-\d{2}$/.test(newDate)) {
-            alert("Enter a valid date in YYYY-MM-DD format.");
-            return;
-        }
-
-        heading.textContent = newTitle.trim();
-        subjectText.textContent = newSubject.trim();
-        card.dataset.date = newDate;
-
-        updateDashboard();
-    }
-});
-
-function updateGreeting() {
-    const hour = new Date().getHours();
-    const greeting = document.getElementById("greeting");
-
-    if (!greeting) return;
-
-    if (hour >= 5 && hour < 12) {
-        greeting.textContent = "Good Morning!";
-    } 
-    else if (hour >= 12 && hour < 17) {
-        greeting.textContent = "Good Afternoon!";
-    } 
-    else if (hour >= 17 && hour < 21) {
-        greeting.textContent = "Good Evening!";
-    } 
-    else {
-        greeting.textContent = "Good Night!";
-    }
-}
-
-updateGreeting();
-
-const profileBtn = document.getElementById("profileBtn");
-const profileMenu = document.getElementById("profileMenu");
-
-const aboutBtn = document.getElementById("aboutBtn");
-const aboutModal = document.getElementById("aboutModal");
-const closeAbout = document.getElementById("closeAbout");
-
-const logoutBtn = document.getElementById("logoutBtn");
-
-// Open profile dropdown
-if (profileBtn && profileMenu) {
-    profileBtn.addEventListener("click", function () {
-        profileMenu.style.display =
-            profileMenu.style.display === "block" ? "none" : "block";
-    });
-}
-
-// Open About Us popup
-if (aboutBtn && aboutModal) {
-    aboutBtn.addEventListener("click", function (event) {
-        event.preventDefault();
-        profileMenu.style.display = "none";
-        aboutModal.style.display = "flex";
-    });
-}
-
-// Close About Us popup
-if (closeAbout && aboutModal) {
-    closeAbout.addEventListener("click", function () {
-        aboutModal.style.display = "none";
-    });
-}
-
-// Close popup when clicking outside
-if (aboutModal) {
-    aboutModal.addEventListener("click", function (event) {
-        if (event.target === aboutModal) {
-            aboutModal.style.display = "none";
-        }
-    });
-}
-
-// Logout section
-logoutBtn.addEventListener("click", function() {
-    profileMenu.classList.remove("show");
-
-    alert("You have been logged out.");
-});
-
-/* ===== SIDEBAR THEME SWITCHER ===== */
-
-const themeToggle = document.getElementById("themeToggle");
-const themeIcon = document.getElementById("themeIcon");
-const themeText = document.getElementById("themeText");
-
-// Apply saved theme
-let currentTheme = localStorage.getItem("dashboardTheme") || "light";
-
-function applyTheme(theme) {
-    currentTheme = theme;
-
-    if (theme === "dark") {
-        document.body.classList.add("dark-mode");
-    } else {
-        document.body.classList.remove("dark-mode");
-    }
-
-    if (themeIcon) {
-        themeIcon.textContent = theme === "dark" ? "☀️" : "🌙";
-    }
-
-    if (themeText) {
-        themeText.textContent = theme === "dark" ? "Light Mode" : "Dark Mode";
-    }
-
-    localStorage.setItem("dashboardTheme", theme);
-}
-
-// Load saved theme
-applyTheme(currentTheme);
-
-// Toggle theme
-if (themeToggle) {
-    themeToggle.addEventListener("click", function(event) {
-        event.preventDefault();
-
-        const newTheme = currentTheme === "dark" ? "light" : "dark";
-
-        applyTheme(newTheme);
-    });
-}
+// Start
+const hr = new Date().getHours();
+$("#greeting").textContent = `Good ${hr < 5 ? "Night" : hr < 12 ? "Morning" : hr < 17 ? "Afternoon" : hr < 21 ? "Evening" : "Night"}, Student! ✨`;
+setTheme(!!localStorage.getItem("dark"));
+render();
