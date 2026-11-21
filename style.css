@@ -83,6 +83,9 @@ body {
     align-items: center;
     gap: 25px;
     margin-bottom: 35px;
+    background: transparent;
+    border: none;
+    box-shadow: none;
 }
 
 .topbar input {
@@ -91,6 +94,13 @@ body {
     border: 1px solid #e0d9ef;
     border-radius: 25px;
     outline: none;
+}
+
+/* Dark Mode */
+body.dark-mode .topbar {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
 }
 
 .profile {
@@ -667,4 +677,46 @@ body.dark-mode button {
 /* Completed assignment */
 body.dark-mode .completed h3 {
     color: #bcbccc !important;
+}
+
+/* Fix Progress card in Dark Mode */
+body.dark-mode .progress-section > div:last-child {
+    background: #303047 !important;
+    color: #ffffff !important;
+    border: 1px solid #41415a;
+    border-radius: 15px;
+}
+
+body.dark-mode .progress-section > div:last-child h2,
+body.dark-mode .progress-section > div:last-child h3,
+body.dark-mode .progress-section > div:last-child p,
+body.dark-mode #progressPercent {
+    color: #ffffff !important;
+}
+
+/* Progress bar */
+body.dark-mode .progress-bar {
+    background: #45405b !important;
+}
+/* Make priority labels readable */
+body.dark-mode .assignment-card span {
+    color: #29233c !important;
+}
+
+/* Keep assignment text white */
+body.dark-mode .assignment-card h3,
+body.dark-mode .assignment-card p,
+body.dark-mode .assignment-card small {
+    color: #ffffff !important;
+}
+/* Remove unwanted dark bar behind search area */
+body.dark-mode .topbar {
+    background: #252538 !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+body.dark-mode .topbar::before,
+body.dark-mode .topbar::after {
+    display: none !important;
 }
