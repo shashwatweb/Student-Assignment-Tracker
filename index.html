@@ -1,258 +1,91 @@
-
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
-    <title>Student Assignment Tracker</title>
-
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Assignment Tracker</title>
+  <link rel="stylesheet" href="style.css">
 </head>
+<body data-view="dashboard">
 
-<body>
+  <aside class="sidebar">
+    <div class="logo">🎓<h2>Student<br>Assignment<br>Tracker</h2></div>
+    <nav>
+      <button data-view="dashboard" class="active">🏠 Dashboard</button>
+      <button data-view="assignments">📋 My Assignments</button>
+      <button data-view="calendar">📅 Calendar</button>
+      <button data-view="completed">✅ Completed</button>
+    </nav>
+    <button id="theme">🌙 Dark Mode</button>
+  </aside>
 
-    <!-- Main Dashboard -->
-    <div class="dashboard">
+  <main>
+    <header>
+      <div><h1 id="greeting"></h1><p>Stay organized, achieve more!</p></div>
+      <input type="search" id="search" placeholder="Search assignments...">
+      <button class="avatar" id="profile" aria-label="About us">👤</button>
+    </header>
 
-        <!-- Sidebar -->
-        <aside class="sidebar">
+    <!-- HOME: three boxes, top to bottom -->
+    <section class="pane v-dashboard">
+      <div class="stat" data-view="assignments"><span>📋</span><div><b id="total"></b>Total Assignments</div></div>
+      <div class="stat" data-view="assignments"><span>⏳</span><div><b id="pending"></b>Pending</div></div>
+      <div class="stat ok" data-view="completed"><span>✅</span><div><b id="completed"></b>Completed</div></div>
+    </section>
 
-            <div class="logo">
-                <h1>🎓</h1>
-                <h2>Student<br>Assignment<br>Tracker</h2>
-            </div>
+    <!-- HOME: upcoming deadlines, progress, motivation -->
+    <section class="card pane v-dashboard">
+      <div class="head"><h2>📅 Upcoming Deadlines</h2></div>
+      <div id="upcoming"></div>
+    </section>
 
-            <nav>
-                <a href="#" class="active">🏠 Dashboard</a>
-                <a href="#">📋 Assignments</a>
-                <a href="#">📅 Calendar</a>
-                <a href="#">✅ Completed Tasks</a>
-            </nav>
+    <section class="card pane v-dashboard">
+      <h3>📊 Progress Overview</h3>
+      <div class="progress"><div id="ring"></div><div><b id="ofText"></b> Assignments Completed<div class="bar"><i id="bar"></i></div></div></div>
+    </section>
 
-            <div class="sidebar-bottom">
-               <button id="themeToggle" class="nav-link theme-sidebar-btn">
-    <span id="themeIcon">🌙</span>
-    <span id="themeText">Dark Mode</span>
-</button>
-            </div>
+    <section class="card cheer pane v-dashboard">You're doing great!<small>Keep going and reach your goals! 🐱</small></section>
 
-        </aside>
+    <!-- MY ASSIGNMENTS + COMPLETED pages: the list -->
+    <section class="card pane v-assignments v-completed">
+      <div class="head">
+        <h2 id="listTitle">📋 My Assignments</h2>
+        <select id="subject"></select>
+        <select id="status">
+          <option value="">All Status</option>
+          <option>Pending</option><option>In Progress</option><option>Completed</option>
+        </select>
+        <select id="sort">
+          <option value="date">Sort by: Deadline</option>
+          <option value="title">Sort by: Name</option>
+        </select>
+        <button id="add" class="pane v-assignments">+ Add Assignment</button>
+      </div>
+      <div id="list"></div>
+    </section>
 
-        <!-- Main Content -->
-        <main class="main-content">
+    <!-- CALENDAR page -->
+    <section class="card pane v-calendar">
+      <div class="head">
+        <button id="prev">❮</button><h2 id="month" style="text-align:center"></h2><button id="next">❯</button>
+      </div>
+      <div id="days"></div>
+    </section>
 
-            <!-- Top Navigation -->
-            <header class="topbar">
+  </main>
 
-                <input
-                    type="search"
-                    id="searchInput"
-                    placeholder="Search assignments..."
-                >
-
-<div class="profile-container">
-    <button class="profile-pic" id="profileBtn" aria-label="Open profile menu">
-        <span class="profile-icon">👤</span>
-    </button>
-
-    <div class="profile-menu" id="profileMenu">
-        <button id="aboutBtn">About Us</button>
-        <button id="logoutBtn">Logout</button>
+  <dialog id="about">
+    <h2>About Us</h2>
+    <p>Meet the team behind Student Assignment Deadline Tracker.</p>
+    <div class="team">
+      <div><b>Shashwat Srivastava</b><small>S26CSEAIU0178</small>script.js</div>
+      <div><b>Tanay Aggarwal</b><small>S26CSEAIU0165</small>index.html</div>
+      <div><b>Sandeep Yadav</b><small>S26CSEAIU0163</small>testing and project report</div>
+      <div><b>Tanmay Tyagi</b><small>S26CSEAIU0181</small>style.css</div>
     </div>
-</div>
+    <form method="dialog"><button class="soft">Close</button></form>
+  </dialog>
 
-
-            </header>
-
-            <!-- Welcome Section -->
-            <section class="welcome">
-
-                <h1 id="greeting">Good Afternoon!</h1>
-
-                <p>
-                    Here's your academic progress at a glance.
-                </p>
-
-            </section>
-
-            <!-- Statistics Cards -->
-            <section class="stats">
-
-                <div class="stat-card purple">
-                    <h2>📚</h2>
-                    <h1 id="totalCount">12</h1>
-                    <p>Total Assignments</p>
-                </div>
-
-                <div class="stat-card blue">
-                    <h2>🕒</h2>
-                    <h1 id="pendingCount">5</h1>
-                    <p>Pending</p>
-                </div>
-
-                <div class="stat-card green">
-                    <h2>✅</h2>
-                    <h1 id="completedCount">7</h1>
-                    <p>Completed</p>
-                </div>
-
-                <div class="stat-card pink">
-                    <h2>⚠️</h2>
-                    <h1 id="dueCount">2</h1>
-                    <p>Due Soon</p>
-                </div>
-
-            </section>
-
-            <!-- Dashboard Content -->
-            <section class="dashboard-content">
-
-                <!-- Upcoming Assignments -->
-                <div class="assignments">
-
-                    <div class="section-heading">
-                        <h2>📅 Upcoming Assignments</h2>
-                        <a href="#">View All →</a>
-                    </div>
-
-                    <div id="assignmentList">
-
-                        <div class="assignment-card">
-                            <div>
-                                <h3>Mathematics Assignment</h3>
-                                <p>Due: 22 November, 2026</p>
-                            </div>
-                            <span class="priority high">
-                                High Priority
-                            </span>
-                        </div>
-
-                        <div class="assignment-card">
-                            <div>
-                                <h3>Physics Lab Report</h3>
-                                <p>Due: 25 November, 2026</p>
-                            </div>
-                            <span class="priority medium">
-                                Medium
-                            </span>
-                        </div>
-
-                        <div class="assignment-card">
-                            <div>
-                                <h3>Web Development Project</h3>
-                                <p>Due: 28 November, 2026</p>
-                            </div>
-                            
-                            <span class="priority low">
-                                In Progress
-                            </span>
-                        </div>
-
-                    </div>
-
-                    <button id="addAssignmentBtn">
-                        + Add New Assignment
-                    </button>
-
-                </div>
-
-                <!-- Calendar -->
-                <div class="calendar">
-
-                    <h2>📅 Calendar</h2>
-
-                    <div class="calendar-header">
-                        <button id="prevMonth">❮</button>
-
-                        <h3 id="monthLabel">
-                            November 2026
-                        </h3>
-
-                        <button id="nextMonth">❯</button>
-                    </div>
-
-                    <div class="calendar-grid" id="calendarGrid">
-                        <!-- Calendar generated by JavaScript -->
-                    </div>
-
-                </div>
-
-            </section>
-
-            <!-- Progress Section -->
-            <section class="progress-section">
-
-                <div class="motivation">
-                    <h2>🎓 Stay on Track!</h2>
-
-                    <p>
-                        You've got this. Keep managing your
-                        assignments! 💜
-                    </p>
-                </div>
-
-                <div class="progress-card">
-
-                    <h3>Your Progress</h3>
-
-                    <div class="progress-bar">
-                        <div id="progressFill"></div>
-                    </div>
-
-                    <p id="progressPercent">58%</p>
-
-                </div>
-
-            </section>
-
-        </main>
-
-    </div>
-
-<div id="aboutModal" class="about-modal">
-    <div class="about-content">
-
-        <button id="closeAbout">&times;</button>
-
-        <h2>About Us</h2>
-        <p>Meet the team behind Student Assignment Deadline Tracker.</p>
-
-        <div class="team-container">
-
-            <div class="team-member">
-                <h3>Tanay Agarwal</h3>
-                <h4>S26CSEAIU0165</h4>
-                <p>Project Leader</p>
-            </div>
-
-            <div class="team-member">
-                <h3>Shashwat Srivastava</h3>
-                <h4>S26CSEAIU0178</h4>
-                <p>Dashboard Developer</p>
-            </div>
-
-            <div class="team-member">
-                <h3>Sandeep Yadav</h3>
-                <h4>S26CSEAIU0163</h4>
-                <p>Frontend Developer</p>
-            </div>
-
-            <div class="team-member">
-                <h3>Tanmay Tyagi</h3>
-                <h4>S26CSEAIU0181</h4>
-                <p>JavaScript Developer</p>
-            </div>
-
-        </div>
-
-        <p class="project-name">Student Assignment Deadline Tracker</p>
-
-    </div>
-</div>
-    <script src="script.js"></script>
-
+  <script src="script.js"></script>
 </body>
 </html>
