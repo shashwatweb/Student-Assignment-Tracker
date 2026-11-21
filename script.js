@@ -251,32 +251,45 @@ updateGreeting();
 
 const profileBtn = document.getElementById("profileBtn");
 const profileMenu = document.getElementById("profileMenu");
+
 const aboutBtn = document.getElementById("aboutBtn");
+const aboutModal = document.getElementById("aboutModal");
+const closeAbout = document.getElementById("closeAbout");
+
 const logoutBtn = document.getElementById("logoutBtn");
 
-// Open and close profile menu
-profileBtn.addEventListener("click", function(event) {
-    event.stopPropagation();
-    profileMenu.classList.toggle("show");
-});
+// Open profile dropdown
+if (profileBtn && profileMenu) {
+    profileBtn.addEventListener("click", function () {
+        profileMenu.style.display =
+            profileMenu.style.display === "block" ? "none" : "block";
+    });
+}
 
-// Close menu when clicking outside
-document.addEventListener("click", function(event) {
-    if (!event.target.closest(".profile-container")) {
-        profileMenu.classList.remove("show");
-    }
-});
+// Open About Us popup
+if (aboutBtn && aboutModal) {
+    aboutBtn.addEventListener("click", function (event) {
+        event.preventDefault();
+        profileMenu.style.display = "none";
+        aboutModal.style.display = "flex";
+    });
+}
 
-// About section
-aboutBtn.addEventListener("click", function() {
-    profileMenu.classList.remove("show");
+// Close About Us popup
+if (closeAbout && aboutModal) {
+    closeAbout.addEventListener("click", function () {
+        aboutModal.style.display = "none";
+    });
+}
 
-    alert(
-        "Student Assignment Deadline Tracker\n\n" +
-        "A dashboard to manage assignments, track deadlines, " +
-        "and monitor academic progress."
-    );
-});
+// Close popup when clicking outside
+if (aboutModal) {
+    aboutModal.addEventListener("click", function (event) {
+        if (event.target === aboutModal) {
+            aboutModal.style.display = "none";
+        }
+    });
+}
 
 // Logout section
 logoutBtn.addEventListener("click", function() {
